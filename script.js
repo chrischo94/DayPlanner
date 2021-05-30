@@ -15,7 +15,7 @@ var timeSet3 = ["9", "10", "11", "12", "13", "14", "15", "16", "17"];
 var timeSet2 = ["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"];
 
 var textInputValue;
-var currentDate, currentTime, timeValueEl;
+var currentDate, currentTime, timeValueEl, localS;
 
 currentDate = setInterval(function(){
   $("#currentDay").text(moment().format("MMMM Do YYYY, hh:mm:ss, dddd"));
@@ -27,7 +27,7 @@ $("tr").on("click", ".content", function(){
   $(this).children().replaceWith($(input));
   input.trigger("focus")
 });
-$("tr").on("blur", ".input", function(){
+$("tr").on("blur", "input", function(){
   textInputValue = $(this).val();
   var blank = $("<p class='pValue'>");
   $(this).replaceWith(blank);
@@ -40,7 +40,7 @@ $("tr").on("click", ".saveBtn", function(){
     .parent()
     .children()
     .attr("class")
-    .replace("hourofDay", "");
+    .replace(" timeHour", "");
   timeValueEl = timeValue;
   findArray(timeValueEl);
   setLS();
@@ -49,8 +49,10 @@ $("tr").on("click", ".saveBtn", function(){
 
 
 
-function findArray (time, ) {
-  if (workTime === null || workTime === undefined){
+function findArray (time) {
+  if (workTime === null) {
+    return;
+  } else if (workTime === undefined){
     return;
   } else {
     for (var i=0; i < workTime.length; i++)
@@ -60,18 +62,6 @@ function findArray (time, ) {
   }
 }
 
-function setLS(){
-  localStorage.setItem("workTime", JSON.stringify(workTime))
-}
-
-
-function getLS(){
-  if (localStorage.getItem("workTime") === null || undefined) {
-    return;
-  } else {
-    workTime = JSON.parse(localStorage.getItem("workTime"))
-  }
-}
 function workSchedule(){
   if (workTime === null) {
     return;
@@ -88,18 +78,33 @@ function workSchedule(){
   }
 }
 
+function setLS(){
+  localStorage.setItem("workTime", JSON.stringify(workTime))
+}
+
+
+function getLS(){
+  if (localStorage.getItem("workTime") === null) {
+    return;
+  } else if (localStorage.getItem("workTime") === undefined) {
+    return; 
+  }
+  else {
+    workTime = JSON.parse(localStorage.getItem("workTime"))
+  }
+}
 function checkTime(){
   if (workTime===null) {
     return;
   } else if (workTime === undefined) {
     return;
   } else {
-    for (var i=0; i<workTime.length; i++) {
+    for (var i=0; i < workTime.length; i++) {
       if (afterTime(timeSet2[i]) === true){
         selector = ".hour-" + timeSet[i];
         $(selector).css({"background-color": "grey"})
       
-      } else if (afterTime(timeSet2[i])===false){
+      } else if (afterTime(timeSet2[i]) === false){
         selector = ".hour-" + timeSet[i];
         $(selector).css({"background-color": "green"})
       }
@@ -107,7 +112,7 @@ function checkTime(){
       //   selector = ".hour-" + timeSet[i];
       //   $(selector).css({"background-color": "red"})
       // }
-    } for (var i=0; i<workTime.length; i++){
+    } for (var i=0; i < workTime.length; i++){
       if (currentTimeHour === timeSet3[i]) {
         selector = ".hour-"+timeSet[i];
         $(selector).css({"background-color": "yellow"});
@@ -122,7 +127,7 @@ function afterTime(time) {
 }
 
 function withinTime(time) {
-  return moment().suubtract(moment(time, "hh:mm A"));
+  return moment().subtract(moment(time, "hh:mm A"));
 }
 
 getLS();
